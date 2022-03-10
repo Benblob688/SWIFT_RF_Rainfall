@@ -2,6 +2,7 @@
 Python scripts to tune, train, verify and apply random forest (RF) models for MSG-based rainfall retrieval over Africa.
 
 [insert image of final published product output working here]
+![An example of the SWIFT RF Rainfall algorithm output](https://github.com/Benblob688/SWIFT_RF_Rainfall/raw/main/RF_rainfall_20180628_1630.png)
 
 There are 6 steps to creating a custom version of the algorithm published in Pickering et al., 2022.
 |    | Step             | _Description_ |
