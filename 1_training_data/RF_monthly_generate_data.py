@@ -30,7 +30,7 @@ print (sys.argv[:])
 import warnings
 warnings.filterwarnings('ignore')
 
-import RF_generate_data_func as RF # all the messy functions to import all the different datasets are within here
+import RF_generate_data_functions as RF # all the messy functions to import all the different datasets are within here
 
 # bring in the interp_coeffs tuple
 with open('/home/users/bpickering/bpickering_swift/random_forest_precip/1_training_data/interp_coeffs_SEVIRI_to_GPM.pickle', 'rb') as f:
