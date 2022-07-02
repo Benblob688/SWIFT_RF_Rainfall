@@ -1,9 +1,21 @@
+README.md
+
+
 # SWIFT_RF_Rainfall
 Python scripts to tune, train, verify and apply random forest (RF) models for MSG-based rainfall retrieval over Africa.
 
 [insert image of final published product output working here]
 ![An example of the SWIFT RF Rainfall algorithm output](https://github.com/Benblob688/SWIFT_RF_Rainfall/raw/main/RF_rainfall_20180628_1630.png)
 
+# Prerequisites
+This package has been developed and tested entirely on the [JASMIN compute cluster][https://jasmin.ac.uk/], within the SWIFT Group Workspace (GWS). If operating outside of the SWIFT GWS on JASMIN, there are a number of other dependancies that are required for these scripts to function. A Python environment file from `conda` is included which is not OS-specific. Setting up a new Python environment for this package is recommended. 
+If you already recieve real-time SEVIRI images or NWCSAF CRR products through a satellite dish, you will have these dependencies already. Completely new users of NWCSAF products will have to set these up and gain a license from EUMETSAT.
+a) Spinning Enhanced Visible and InfraRed Imager (SEVIRI) satellite files in `HRIT` format. These can be recieved directly with a satellite dish (see [Roberts et al. 2021][https://doi.org/10.1002/wea.3936]) or by downloading them from [EUMETSEAT][https://navigator.eumetsat.int/product/EO:EUM:DAT:MSG:HRSEVIRI] under "By format > HRIT" where the format is explained (a file for each channel plus EPI and PRO files demarking the start and end of an observing window) as well as links to "Get Access". Either method requires a login/license with EUMETSAT.
+b) [xRITDecompress][https://gitlab.eumetsat.int/open-source/PublicDecompWT] should be installed to be able to decompress the `HRIT` files.
+
+SEVIRI data in NetCDF and other formats could be supported, but the scripts given here must then be modified by the user. At some point the satellite images are all in `numpy` arrays which is a common overlap point in the scripts for anyone who wishes to modify the scripts to support other data formats.
+
+# Summary
 There are 6 steps to creating a custom version of the algorithm published in Pickering et al., 2022.
 |    | Step             | _Description_ |
 | -- | ---------------- | ------------- |
@@ -34,7 +46,7 @@ The `topography` directory contains the data supplied to the RF in Pickering et 
 `RF_single_generate_data.py` is identical to `RF_monthly_generate_data.py` but takes a specific year, month, day, hour and minute, creating only one output pickle file.
 
 # 2. Tune Model
-The tuning step uses brute force to test different hyperparameters of the RF model, and ranks the input features by importance. This step requires the most human input, as there is little automation in the choise of feature importances. If any step were to be improved in future versions, tuning would be top of the list of priorities. The fraction of total possible hyperparameter settings is very small due to computational requirements, however the distribution of OOB scores reaches a plataeu, signaling that the gains from increasing the number of hyperparameter combinations is likely to be small. This may differ for new domains, label datasets, and input features.
+The tuning step uses brute force to test different hyperparameters of the RF model, and ranks the input features by importance. This step requires the most human input, as there is little automation in the choice of feature importances. If any step were to be improved in future versions, tuning would be top of the list of priorities. The fraction of total possible hyperparameter settings is very small due to computational requirements, however the distribution of OOB scores reaches a plataeu, signaling that the gains from increasing the number of hyperparameter combinations is likely to be small. This may differ for new domains, label datasets, and input features.
 
 `RF_settings` contains some examples of the output from the tuning script. These are the outputs for the methodology in Pickering et al. (2022) that assisted with the subjective determination of final input features used. Inside is a `.csv` of input features and their impurity-decrease measured importance, ranked. A `.png` image showing the same data also exists. Finally a `.pkl` pickle file contains a dictionary of the best hyperparameter combination and the chosen input features to be used in training. Ideally the features should be chosen first, and then the hyperparameter tuning should take place. This was done manually in Pickering et al. (2022).
 
