@@ -1,1 +1,2 @@
 3_train_model/RF_models/*.pkl filter=lfs diff=lfs merge=lfs -text
+RF_model___8_features___201501-201912_all_10.0perc___bins_0-0.5-2-5-10-20-35-60-100-200__est250_balanced_subsample_gini_maxfeat5_minsplit5_maxdepth20_bootstrap_0.0001_time-20220313-1215.pkl filter=lfs diff=lfs merge=lfs -text
