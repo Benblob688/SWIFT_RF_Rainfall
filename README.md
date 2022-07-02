@@ -3,6 +3,7 @@ README.md
 # SWIFT_RF_Rainfall
 [![DOI](https://zenodo.org/badge/461589905.svg)](https://zenodo.org/badge/latestdoi/461589905)
 [![release](https://img.shields.io/badge/release-v1.0.0-blue)](https://github.com/Benblob688/SWIFT_RF_Rainfall/releases/tag/v1.0.0)
+
 Python scripts to tune, train, verify and apply random forest (RF) models for MSG-based rainfall retrieval over Africa.
 
 [insert image of final published product output working here]
