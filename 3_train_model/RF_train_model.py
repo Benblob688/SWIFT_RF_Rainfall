@@ -3,12 +3,12 @@ Code to train a random forest model with scikit-learn and then save it.
 
 Usage:
 
-python RF_train_model.py 2016,1,1,0,0 2021,1,1,0,0 all 0.01 True 5. True 0. 60. 100 balanced_subsample gini 0.001 True 0.2
+python RF_train_model.py <path to parameters.pkl file>
 
-sbatch -p high-mem -t 48:00:00 -mem 262144 -o $basedir/out/$YYYY$MM-%j.out -e $basedir/err/$YYYY$MM-%j.err --wrap="python RF_train_model.py "
+[on JASMIN LOTUS] sbatch -p high-mem -t 48:00:00 -mem 262144 -o $basedir/out/$YYYY$MM-%j.out -e $basedir/err/$YYYY$MM-%j.err --wrap="python RF_train_model.py parameters.pkl "
 
 inputs:
-sys.arvg[1]    str     start datetime in format YYYY,M,D,m,h
+sys.arvg[1]    str     path to parameters .pkl file
 
 accesses: features_datasets sub-directories
 

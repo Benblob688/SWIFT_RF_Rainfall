@@ -14,7 +14,7 @@ Columns of ver (verification) array are:
 9:  Solar_azimuth_sin
 10: IMERG
 11: CRR
-12: CRR-Ph      # Need to add NIPE below here !!!!
+12: CRR-Ph
 13: RF v1
 14: RF v2
 X:  RF vX
@@ -83,36 +83,22 @@ modelpaths = {
     + 'RF_model___base_seviri_plus_diff_plus_topog_plus_wavelets___201501-201912_all_0.5perc___bins_0-0.5-2-5-10-20-35-60-100-200__'
     + 'est100_balanced_subsample_gini_maxfeat4_minsplit5_maxdepth10_bootstrap_0.0001_time-20220306-0647.pkl'}
     
-#     + 'RF_model___base_seviri_plus_diff_plus_topog_plus_wavelets___201501-201912_all_5.0perc___bins_0-0.5-2-5-10-20-35-60-100-200__'
-#     + 'est100_balanced_subsample_gini_maxfeat4_minsplit5_maxdepth10_bootstrap_0.0001_time-20220304-1912.pkl'}
-    
-#         + 'RF_model___short_seviri_diff_all___201501-201912_all_0.1perc___bins_0-0.5-2-5-10-20-35-60-100-200__est100_balanced_subsample_gini_maxfeatNone_minsplit0.001_maxdepthNone_bootstrap_0.01_time-20220118-2153.pkl'}
-#         + 'RF_model___base_seviri_plus_diff_plus_topography___201501-201912_all_10.0perc___bins_0-0.5-2-5-10-20-35-60-100-200__est250_balanced_gini_maxfeatlog2_minsplit2_maxdepth40_bootstrap_0.0001_time-20220207-1703.pkl'}
-    # short_test
-#     1: RF_parameters['modeldir']
-#     + 'RF_model___base_seviri_no_diff___201501-201912_all_10.0perc___bins_0-0.5-2-5-10-20-35-60-100-200__est150_balanced_subsample_gini_maxfeatlog2_minsplit0.005_maxdepth40_bootstrap_0.001_time-20220119-0103.pkl',
-#     2: RF_parameters['modeldir']
-#     + 'RF_model___short_seviri_diff_all___201501-201912_all_0.1perc___bins_0-0.5-2-5-10-20-35-60-100-200__est100_balanced_subsample_gini_maxfeatNone_minsplit0.001_maxdepthNone_bootstrap_0.01_time-20220118-2153.pkl',
-#     3: RF_parameters['modeldir']
-#     + 'RF_model___short_seviri_diff_day_only___201501-201912_all_0.1perc___bins_0-0.5-2-5-10-20-35-60-100-200__est100_balanced_subsample_gini_maxfeatNone_minsplit0.001_maxdepthNone_bootstrap_0.01_time-20220118-2151.pkl',
-#     4: RF_parameters['modeldir']
-#     + 'RF_model___short_seviri_diff_night_only___201501-201912_all_0.1perc___bins_0-0.5-2-5-10-20-35-60-100-200__est100_balanced_subsample_gini_maxfeatNone_minsplit0.001_maxdepthNone_bootstrap_0.01_time-20220118-2151.pkl'
-# }
+#     2: RF_parameters['modeldir'] + 'RF_model___2.pkl',
+#     3: RF_parameters['modeldir'] + 'RF_model___3.pkl'}
+#     ...
 
 
 
 # Product name: ver_array column index
 prod_i = {'CRR': 11,
           'CRR_Ph': 12,
-          'Random_Forest': 13} #,
-#           'RF_short_seviri_diff_all': 14,
-#           'RF_short_seviri_diff_day_only': 15,
-#           'RF_short_seviri_diff_night_only': 16
-#          }#,
-#           'RF_v5': 14,
-#           'RF_v6': 15,
-#           'RF_v7': 16,
-#           'RF_v8': 17}
+          'Random_Forest': 13}#,
+#         'RF_v5': 14,
+#         'RF_v6': 15,
+#         'RF_v7': 16,
+#         'RF_v8': 17}
+#         ...
+
 
 # Columns of ver (verification) array are:
 ver_labels={0: 'YYYYMMDDhhmm',
@@ -129,14 +115,9 @@ ver_labels={0: 'YYYYMMDDhhmm',
             11: 'CRR',
             12: 'CRR_Ph',
             13:'Random_Forest'}#,
-#             14:'RF_short_seviri_diff_all',
-#             15:'RF_short_seviri_diff_day_only',
-#             16:'RF_short_seviri_diff_night_only'}
-#             17:'RF_v5',
-#             18:'RF_v6',
-#             19:'RF_v7',
-#             20:'RF_v8'}
-            #X: 'RF_vX'
+#           14:'RF_v5',
+#           15:'RF_v6',
+#            X:'RF_vX'}
 
 # Units of each feature – update as more are added.
 feature_units = {
@@ -241,9 +222,10 @@ features = RF.import_feature_data_verification(
     seviri_diff=RF_parameters["key_features"]["seviri_diff"], # Maybe they should just always be true, it doesn't take much longer (as %) to import all features...
     topography=RF_parameters["key_features"]["topography"],
     wavelets=RF_parameters["key_features"]["wavelets"],
-#     GFS_TCVW=RF_parameters["key_features"]["GFS_TCVW"],
-#     GFS_field=RF_parameters["key_features"]["GFS_field"]
-    )
+#     NEW_FEAT_1=RF_parameters["key_features"]["NEW_FEAT_1"],
+#     NEW_FEAT_2=RF_parameters["key_features"]["NEW_FEAT_2"]
+#     ...
+)
 
 
 
@@ -268,7 +250,6 @@ feature_list  Type: list. Names for all the columns in the features set.
 
 N.B.:         Must be run immediately after import_feature_data
 '''
-# !!!!! Delete
 print (features.columns)
 #
 features, labels, all_features_list = RF.sort_feature_data(
@@ -363,6 +344,7 @@ print('Done!')
 #########################
 # Make plots that show the statistics vs. solar elevation, so max around +/- 50 º, seeing if sunset changes the skill level.
 # Will not show solar elevation direction (sunset or sunrise) so still need 3-hly plot above.
+# Not yet implemented.
 
 
 

@@ -48,12 +48,44 @@ The `topography` directory contains the data supplied to the RF in Pickering et 
 # 2. Tune Model
 The tuning step uses brute force to test different hyperparameters of the RF model, and ranks the input features by importance. This step requires the most human input, as there is little automation in the choice of feature importances. If any step were to be improved in future versions, tuning would be top of the list of priorities. The fraction of total possible hyperparameter settings is very small due to computational requirements, however the distribution of OOB scores reaches a plataeu, signaling that the gains from increasing the number of hyperparameter combinations is likely to be small. This may differ for new domains, label datasets, and input features.
 
-`RF_settings` contains some examples of the output from the tuning script. These are the outputs for the methodology in Pickering et al. (2022) that assisted with the subjective determination of final input features used. Inside is a `.csv` of input features and their impurity-decrease measured importance, ranked. A `.png` image showing the same data also exists. Finally a `.pkl` pickle file contains a dictionary of the best hyperparameter combination and the chosen input features to be used in training. Ideally the features should be chosen first, and then the hyperparameter tuning should take place. This was done manually in Pickering et al. (2022).
+`RF_settings` contains some examples of the output from the tuning script. These are the outputs for the methodology in Pickering et al. (2022) that assisted with the subjective determination of final input features used. Inside is a `.csv` of input features and their impurity-decrease measured importance, ranked. A `.png` image showing the same data also exists. Finally a `.pkl` pickle file contains a dictionary of the best hyperparameter combination and the chosen input features to be used in training. Ideally the features should be chosen first, and then the hyperparameter tuning should take place. This was done manually in Pickering et al. 2022 (in preparation).
 
 `RF_tune_model_functions.py` contains all the necessary functions for running the tuning script. This includes many duplicates in the training and verification function scripts, but is included here to keep each step separate.
 
-`RF_tune_model.py` takes one argument when called in the terminal: the name of the model. This is set in the `0_model_parameters` step, and is used for both ingesting the parameters file from the 0th step, and also for exporting the three files in `RF_settings`, where the model name is used in the filename.
+`RF_tune_model.py` takes one argument when called in the terminal: the path to the `0_model_parameters` file. The parameters file contains a dictionary with all parameters inside. The script takes all the information it needs from that parameters dictionary.
 
 # 3. Train Model
+Training the random forest model uses the best hyperparameters found in the `2_tune_model` step, and by defualt uses a larger sample set of training data than in the tune step. The model is trained and then saved. The labels of the features are kept in the model object under `rf_object.feature_names_in_`.
+
+`RF_models` is where trained RF models should go. One example is included from the publication Pickering et al. 2022 (in preparation).
+
+`RF_train_model_functions.py` contains all the necessary functions for running the training script. This includes many duplicates in the tuning and verification function scripts, but is included here to keep each step separate.
+
+`RF_train_model.py` takes one argument when called in the terminal: the path to the `0_model_parameters` file. The parameters file contains a dictionary with all parameters inside. The script takes all the information it needs from that parameters dictionary.
 
 
+# 4. Verify Model
+The verification step takes one or multiple models and verifies them. Only the parameters file need to be passes in the command line, but the paths to the models you wish to have verified must be editied in the python script itself at this stage. There is a dictionary containing paths to each model you wish to have verified. The reason for this is that the model training steps so far have been independent of each model. At the verification step, multiple models saves importing the verification sample data multiple times, and allows plotting of the verification results between models on a single plot.
+
+`RF_verification_functions.py` contains all the necessary functions for running the verification script. This includes many duplicates in the tuning and training function scripts, but is included here to keep each step separate. This script contains all of the statistical codes and plotting codes for the verification script.
+
+`RF_model_verification_script.py` takes one argument when called in the terminal: the path to the `0_model_parameters` file. The parameters file contains a dictionary with all parameters inside. The script takes all the information it needs from that parameters dictionary. Models to be verifid must be specified in the script itself. Multiple can be entered into the `modelpaths` dictionary at the top of the script (line 81).
+In this script, comparison rainfall datasets are used. Currently, the two supported datasets are the NWCSAF CRR and CRR-Ph products. These have been regrided to 0.1º to match the radnom forests created in Pickering et al. 2022 (in preparation), but any rainfall dataset could be added in with some modification. So long as the data are on the same grid and temporal resolution as the other products being verified, against GPM, then the verification is valid. Some tinkering with the code will be required for this.
+Many files are output, so it is recommended to make a unique directory within `/4_verify_model/output` for each run of the verification script. Outputs include:
+- Statistics summary table. A `.csv` with standard statistics about each model or product supplied.
+- Time-based statistics. Line plots of various statistical metrics plotted on line graphs over:
+    - 3-hourly periods of the day (in Zulu time).
+    - months of the year.
+- Location-based statistics. Maps of Africa with veification done on 1º (10x10 pixels of each product) grid, with overall dimensions of 73 x 72 pixels. Various statistical metrics are shown.
+- Precipitation rate-based statistics. Grids of each product versus GPM precipitation for each precipitation rate class. Hit score is included above, and a comparative climatology is shown below.
+- Performance diagrams. These statistical plots combine several metrics into one plot, and both different products, and different precipitation rate classes, are shown simultaneously. A zoomed in version of this plot is also made, since most data points are in the lower left 10% of the standard plot.
+- Importances. A bar chart of features given to each model, with their relative importance based on gini-impurity reduction. Better methods of calculating relative importance such as permutation are avaialble but not implemented here.
+- Feature thresholds. These heatmaps show what values of each feature are used to split samples in the trees of the forest. For example, in Pickering et al. 2022 (in preparation), it was found that the latitude boundary between the Sahel and the Sahara was used more frequently than other latitudes for splitting (the hypothesis being that the trained model noticed that less rainfall fell north of this boundary).
+- Decision tree. The first tree of the forest in the model is plotted. Note that this is usually plotted with lots of overlap if the forest has more than 20 nodes, making it unhelpful in most cases.
+
+The verification can quickly overwhelm system resources during the plot_maps step. The time period (`start` and `end`) for verification should differ than that of `tune` and `train`. However, some overlap is possible because the variable `perc_keep` used in the tuning and training step is instead flipped here, and `perc_exclude` is used. This means that if `perc_keep` in earlier steps and `perc_exclude` in the verification step, are both less than `0.5`, the scripts will not use the same data. The use of `np.random.seed` fixed (defualt=42) means the results are repeatable in nature with random-like behaviour.
+
+# 5. Apply Model
+Only one python notebook exists here as a demonstration of how to use a trained model to plot rainfall. Current SEVIRI data can be used or older SEVIRI data, just put in a date and the function script (imported at the top of the notebook) will source the file from where you are storing your files. Bear in mind you need an archive of HRIT-format SEVIRI files, and `xRITDecompress` as described in the prerequisites above. Existing users of NWCSAF products do have these both running already. You will need to edit all the scripts in this module to source files from your own HRIT archive. The default is assuming that you are running this code on the JASMIN HPC platform.
+
+This demo `apply_model` code can then be turned into operational scripts to plot and save images of derived rainfall as required for new incoming satellite data in near real time.
